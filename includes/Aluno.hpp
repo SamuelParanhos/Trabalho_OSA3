@@ -10,6 +10,8 @@ private:
 public:
     Aluno();
     ~Aluno();
+    void parser(std::string linha);
+    void display();
 };
 
 #endif
