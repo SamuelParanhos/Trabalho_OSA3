@@ -64,7 +64,7 @@ bool SistemaGerenciador::lerRegistro(std::ifstream &in, Aluno &aluno, long offse
     return true;
 }
 
-void buscarAlunoPorMatricula(int matricula, std::ifstream &in, std::vector<IndicePrimario> &indices)
+void SistemaGerenciador::buscarAlunoPorMatricula(int matricula, std::ifstream &in, std::vector<IndicePrimario> &indices)
 {
     //Declara as variáveis auxiliares
     int ini = 0;

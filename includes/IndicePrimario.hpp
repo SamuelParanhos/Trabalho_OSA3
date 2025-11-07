@@ -11,7 +11,7 @@ private:
 public:
     IndicePrimario(/* args */);
     ~IndicePrimario();
-    int matriucla;
+    int matricula;
     long byte_offset;
 };
 #endif
