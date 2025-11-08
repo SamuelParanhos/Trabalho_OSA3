@@ -3,13 +3,10 @@
 
 class Aluno
 {
-private:
+public:
     int matricula;
     char nome[50];
     char curso[50];
-public:
-    Aluno();
-    ~Aluno();
     void parser(std::string linha);
     void display();
 };
