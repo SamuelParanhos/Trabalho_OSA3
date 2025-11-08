@@ -1,7 +1,7 @@
 #include "../includes/IndicePrimario.hpp"
 #include "../includes/SistemaGerenciador.hpp"
 
-//Ordena o vetor de índices usando HeapSort
+// Ordena o vetor de índices usando HeapSort
 void IndicePrimario::organizar(std::vector<IndicePrimario> &indices)
 {
     int n = indices.size();
@@ -20,18 +20,18 @@ void IndicePrimario::organizar(std::vector<IndicePrimario> &indices)
 
 void IndicePrimario::desce(std::vector<IndicePrimario> &indices, int tamanho, int no)
 {
-    int maior = no;       // Índice do maior elemento
-    int fe = 2 * no + 1;  // Filho esquerdo
-    int fd = 2 * no + 2;  // Filho direito
-    
-      // Se o filho esquerdo existe e é maior que o pai, atualiza "maior"
+    int maior = no;      // Índice do maior elemento
+    int fe = 2 * no + 1; // Filho esquerdo
+    int fd = 2 * no + 2; // Filho direito
+
+    // Se o filho esquerdo existe e é maior que o pai, atualiza "maior"
     if (fe < tamanho && indices[fe].matricula > indices[maior].matricula)
-    maior = fe;
-     // Se o filho direito existe e é maior que o atual "maior", atualiza novamente
+        maior = fe;
+    // Se o filho direito existe e é maior que o atual "maior", atualiza novamente
     if (fd < tamanho && indices[fd].matricula > indices[maior].matricula)
-    maior = fd;
-    
-     // Se o maior não for o próprio nó, faz a troca e continua descendo recursivamente
+        maior = fd;
+
+    // Se o maior não for o próprio nó, faz a troca e continua descendo recursivamente
     if (maior != no)
     {
         troca(indices, no, maior);
@@ -39,7 +39,7 @@ void IndicePrimario::desce(std::vector<IndicePrimario> &indices, int tamanho, in
     }
 }
 
-//troca dois elementos de posição
+// troca dois elementos de posição
 void IndicePrimario::troca(std::vector<IndicePrimario> &indices, int i, int j)
 {
     IndicePrimario temp = indices[i];

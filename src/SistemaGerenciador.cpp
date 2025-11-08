@@ -2,6 +2,8 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <cstring>
+#include <string>
 
 void SistemaGerenciador::gerarArquivos()
 {
@@ -75,7 +77,50 @@ void SistemaGerenciador::gerarArquivoIndicePrimario()
 
 void SistemaGerenciador::gerarArquivoIndiceSecundario()
 {
-    
+    std::ofstream fileIndice(arquivoIndiceSecundario);
+    std::ifstream arquivoBin(arquivoDados, std::ios::binary);
+
+    long offset;
+    Aluno aluno;
+
+    std::vector<IndiceSecundario> indiceSecundario;
+
+    int index = 0;
+    IndiceSecundario in;
+
+    while (lerRegistro(arquivoBin, aluno, offset))
+    {
+        IndiceSecundario indice;
+        strcpy(indice.chave_curso, aluno.curso);
+        indice.rrn_lista_invertida = offset;
+
+        indiceSecundario.push_back(indice);
+    }
+    int tam = indiceSecundario.size();
+
+    in.organizaIndices(indiceSecundario, tam);
+
+    std::vector<std::string> curso = encontraCursos(indiceSecundario);
+
+    for (int i = 0; i < curso.size(); i++)
+    {
+    }
+}
+
+std::vector<std::string> SistemaGerenciador::encontraCursos(std::vector<IndiceSecundario> indices)
+{
+    std::vector<std::string> cursos;
+    char curso[30];
+    for (int i = 0; i < indices.size(); i++)
+    {
+        if (strcmp(curso, indices[i].chave_curso) == 0)
+        {
+            continue;
+        }
+        cursos.push_back(indices[i].chave_curso);
+        strcpy(curso, indices[i].chave_curso);
+    }
+    return cursos;
 }
 
 void SistemaGerenciador::escreverRegistro(std::ofstream &out, const Aluno &aluno)
