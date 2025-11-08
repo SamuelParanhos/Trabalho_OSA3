@@ -2,7 +2,9 @@
 #define SISTEMA_GERENCIADOR_HPP
 
 #include <string>
+#include <fstream>
 #include "Aluno.hpp"
+#include "IndicePrimario.hpp"
 
 class SistemaGerenciador
 {

@@ -1,10 +1,8 @@
 #include "../includes/SistemaGerenciador.hpp"
-#include "../includes/Aluno.hpp"
-#include "../includes/IndicePrimario.hpp"
 #include <iostream>
 #include <sstream>
 #include <vector>
-#include <fstream>
+
 
 void SistemaGerenciador::gerarArquivos()
 {
