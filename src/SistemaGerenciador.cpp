@@ -79,10 +79,10 @@ void SistemaGerenciador::gerarArquivoIndiceSecundario()
 {
     std::ofstream fileIndice(arquivoIndiceSecundario);
     std::ifstream arquivoBin(arquivoDados, std::ios::binary);
+    std::ofstream listaInvertida(ListaInvertida);
 
     long offset;
     Aluno aluno;
-
     std::vector<IndiceSecundario> indiceSecundario;
 
     int index = 0;
@@ -104,7 +104,7 @@ void SistemaGerenciador::gerarArquivoIndiceSecundario()
 
     for (int i = 0; i < curso.size(); i++)
     {
-    }
+        }
 }
 
 std::vector<std::string> SistemaGerenciador::encontraCursos(std::vector<IndiceSecundario> indices)

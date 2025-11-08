@@ -19,6 +19,7 @@ private:
     std::string arquivoListainvertidaCurso;
     std::string arquivioDisponiveis;
     std::string arquivoIndiceSecundario;
+    std::string ListaInvertida;
 
 public:
     void iniciar();
