@@ -17,10 +17,10 @@ private:
     std::string arquivioDisponiveis;
 
 public:
-    SistemaGerenciador(/* args */);
     void iniciar();
     void gerarArquivos();
     void gerarArquivoIndicePrimario();
+    void gerarArquivoIndiceSecundario();
     void inserirAluno();
     void buscarAlunoPorMatricula(int matricula, std::ifstream &in, std::vector<IndicePrimario> &indices);
     void bucarAlunosPorCurso();

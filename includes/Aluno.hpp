@@ -7,8 +7,10 @@ public:
     int matricula;
     char nome[50];
     char curso[50];
-    void parser(std::string linha);
-    void display();
+public:
+
+  void parser(std::string linha);
+  void display();
 };
 
 #endif

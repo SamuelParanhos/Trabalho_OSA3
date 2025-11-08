@@ -73,6 +73,11 @@ void SistemaGerenciador::gerarArquivoIndicePrimario()
     fileBin.close();
 }
 
+void SistemaGerenciador::gerarArquivoIndiceSecundario()
+{
+    
+}
+
 void SistemaGerenciador::escreverRegistro(std::ofstream &out, const Aluno &aluno)
 {
     out.write(reinterpret_cast<const char *>(&aluno), sizeof(Aluno));
@@ -133,12 +138,12 @@ long SistemaGerenciador::buscarIndicePrimario(int matricula, const std::vector<I
 void SistemaGerenciador::buscarAlunoPorMatricula(int matricula, std::ifstream &in, std::vector<IndicePrimario> &indices)
 {
     Aluno aluno;
-    //Busca o indice Primario
+    // Busca o indice Primario
     long offset = buscarIndicePrimario(matricula, indices);
 
     if (offset != 1)
     {
-        //Lê o registro no arquivo de dados
+        // Lê o registro no arquivo de dados
         if (lerRegistro(in, aluno, offset))
         {
             aluno.display();
@@ -148,3 +153,8 @@ void SistemaGerenciador::buscarAlunoPorMatricula(int matricula, std::ifstream &i
 
     std::cout << "Matricula não encontrada!!!" << std::endl;
 }
+
+// Modificar o heap, para inserção e remoção
+// Criar os índices secundarios
+// Alterar o menu
+// Implementar a politica de remoção usando lista de disponíveis.
