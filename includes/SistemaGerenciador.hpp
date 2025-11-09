@@ -8,6 +8,7 @@
 #include "IndicePrimario.hpp"
 #include "IndiceSecundario.hpp"
 #include "NoListaInvertida.hpp"
+#include "QuickSort.hpp"
 
 class SistemaGerenciador
 {
@@ -22,6 +23,16 @@ private:
     std::string ListaInvertida;
 
 public:
+    SistemaGerenciador(const std::string &csv, const std::string &dados, const std::string &indicePrimario,
+                      const std::string &indiceSecundario, const std::string &listaInvertida)
+    {
+        arquivoCSV = csv;
+        arquivoDados = dados;
+        arquivoIndicePrimario = indicePrimario;
+        arquivoIndiceCurso = indiceSecundario;
+        arquivoListainvertidaCurso = listaInvertida;
+    };
+    SistemaGerenciador() = default;
     void iniciar();
     void gerarArquivos();
     void gerarArquivoIndicePrimario();

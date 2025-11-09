@@ -1,9 +1,40 @@
 #include "../includes/SistemaGerenciador.hpp"
+#include "../includes/QuickSort.hpp"
 #include <iostream>
 #include <sstream>
 #include <vector>
 #include <cstring>
 #include <string>
+
+void SistemaGerenciador::iniciar()
+{
+    //menu de teste
+    int opcao;
+    do
+    {
+        std::cout << "Sistema Gerenciador de Alunos" << std::endl;
+        std::cout << "-------------------------------" << std::endl;
+        std::cout << "1. Gerar Arquivo de Dados a partir do CSV" << std::endl;
+        std::cout << "2 - Gerar Arquivo de indice" << std::endl;
+        std::cout << "3 - Gerar Arquivo de indice Secundario" << std::endl;
+        std::cout << "0 - Sair" << std::endl;
+        std::cout << "Escolha uma opcao: ";
+        std::cin >> opcao;
+
+        switch (opcao)
+        {
+        case 1:
+            gerarArquivos();
+            break;
+        case 2:
+            gerarArquivoIndicePrimario();
+            break;
+        case 3:
+            gerarArquivoIndiceSecundario();
+            break;
+        }
+    } while (opcao != 0);
+}
 
 void SistemaGerenciador::gerarArquivos()
 {
@@ -81,48 +112,60 @@ void SistemaGerenciador::gerarArquivoIndiceSecundario()
     std::ifstream arquivoBin(arquivoDados, std::ios::binary);
     std::ofstream listaInvertida(ListaInvertida);
 
-    long offset;
-    Aluno aluno;
+    long offset = 0;
     std::vector<IndiceSecundario> indiceSecundario;
+    Aluno aluno;
+    std::vector<Aluno> alunos;
 
     int index = 0;
     IndiceSecundario in;
+    Aluno aux;
 
+    QuickSort <IndiceSecundario> organizarIn;
+    QuickSort <Aluno> organizaAluno;
+
+    // Ler todos os alunos e gera os indices
     while (lerRegistro(arquivoBin, aluno, offset))
     {
         IndiceSecundario indice;
-        strcpy(indice.chave_curso, aluno.curso);
+        strcpy(indice.curso, aluno.curso);
         indice.rrn_lista_invertida = offset;
-
         indiceSecundario.push_back(indice);
+        offset += sizeof(Aluno);
+
+        alunos.push_back(aluno);
     }
     int tam = indiceSecundario.size();
 
-    in.organizaIndices(indiceSecundario, tam);
+    // organiza por curso usando o quickSort
+    organizarIn.organizaIndices(indiceSecundario, tam);
+    organizaAluno.organizaIndices(alunos, alunos.size());
 
-    std::vector<std::string> curso = encontraCursos(indiceSecundario);
+    // Gera a lista Invertida
 
-    for (int i = 0; i < curso.size(); i++)
+    long inicio = 0;
+    char curso[30] = "";
+
+    fileIndice << indiceSecundario[0].curso << " " << indiceSecundario[0].rrn_lista_invertida << std::endl;
+
+    strcpy(curso, indiceSecundario[0].curso);
+
+    for (int i = 0; i < indiceSecundario.size(); i++)
     {
-        }
-}
-
-std::vector<std::string> SistemaGerenciador::encontraCursos(std::vector<IndiceSecundario> indices)
-{
-    std::vector<std::string> cursos;
-    char curso[30];
-    for (int i = 0; i < indices.size(); i++)
-    {
-        if (strcmp(curso, indices[i].chave_curso) == 0)
+        if (strcmp(curso, indiceSecundario[i].curso) == 0)
         {
+            
             continue;
         }
-        cursos.push_back(indices[i].chave_curso);
-        strcpy(curso, indices[i].chave_curso);
-    }
-    return cursos;
-}
 
+        fileIndice << indiceSecundario[i].curso << " " << indiceSecundario[i].rrn_lista_invertida << std::endl;
+        
+            //Lista Invertida
+        strcpy(curso, indiceSecundario[i].curso);
+    }
+    long novaPos = listaInvertida.tellp();
+    fileIndice << cursoAtual << " | " << inicio << "\n";
+}
 void SistemaGerenciador::escreverRegistro(std::ofstream &out, const Aluno &aluno)
 {
     out.write(reinterpret_cast<const char *>(&aluno), sizeof(Aluno));
@@ -203,3 +246,5 @@ void SistemaGerenciador::buscarAlunoPorMatricula(int matricula, std::ifstream &i
 // Criar os índices secundarios
 // Alterar o menu
 // Implementar a politica de remoção usando lista de disponíveis.
+
+

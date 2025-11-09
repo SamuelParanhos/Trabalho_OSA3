@@ -46,6 +46,8 @@
     "streambuf": "cpp",
     "typeinfo": "cpp",
     "optional": "cpp",
-    "cstring": "cpp"
+    "cstring": "cpp",
+    "quicksort": "cpp",
+    "ctime": "cpp"
   }
 }
