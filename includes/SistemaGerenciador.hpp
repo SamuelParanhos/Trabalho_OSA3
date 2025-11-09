@@ -8,7 +8,7 @@
 #include "IndicePrimario.hpp"
 #include "IndiceSecundario.hpp"
 #include "NoListaInvertida.hpp"
-#include "QuickSort.hpp"
+#include "Auxiliar.hpp"
 
 class SistemaGerenciador
 {
@@ -24,7 +24,7 @@ private:
 
 public:
     SistemaGerenciador(const std::string &csv, const std::string &dados, const std::string &indicePrimario,
-                      const std::string &indiceSecundario, const std::string &listaInvertida)
+                       const std::string &indiceSecundario, const std::string &listaInvertida)
     {
         arquivoCSV = csv;
         arquivoDados = dados;
@@ -46,9 +46,15 @@ public:
 private:
     long buscarIndicePrimario(int matricula, const std::vector<IndicePrimario> &indices);
     long buscarIndiceSecundario(const std::string &curso);
-    void escreverRegistro(std::ofstream &out, const Aluno &aluno);
     bool lerRegistro(std::ifstream &in, Aluno &aluno, long offset);
     long obterEspaçoDisponivel();
     void adicionarEspaçoDisponivel(long offset);
 };
 #endif
+
+template <typename T>
+
+void escreverRegistro(std::ofstream &out, const T &objeto)
+{
+    out.write(reinterpret_cast<const char *>(&objeto), sizeof(T));
+}

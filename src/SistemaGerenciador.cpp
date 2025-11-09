@@ -1,5 +1,4 @@
 #include "../includes/SistemaGerenciador.hpp"
-#include "../includes/QuickSort.hpp"
 #include <iostream>
 #include <sstream>
 #include <vector>
@@ -8,7 +7,7 @@
 
 void SistemaGerenciador::iniciar()
 {
-    //menu de teste
+    // menu de teste
     int opcao;
     do
     {
@@ -98,7 +97,7 @@ void SistemaGerenciador::gerarArquivoIndicePrimario()
     // Grava cada registro do vetor em um arquivo
     for (int i = 0; i < tam; i++)
     {
-        fileIndice << indices[i].matricula << ' ' << indices[i].byte_offset << '\n';
+        escreverRegistro(fileIndice, indices[i]);
     }
 
     // Fechamento dos arquivos
@@ -107,9 +106,10 @@ void SistemaGerenciador::gerarArquivoIndicePrimario()
 }
 
 // Definição da estrutura que será salva na Lista Invertida
-struct ItemListaInvertida {
-    std::string matricula; 
-    long rrn;              
+struct ItemListaInvertida
+{
+    std::string matricula;
+    long rrn;
 };
 
 void SistemaGerenciador::gerarArquivoIndiceSecundario()
@@ -121,97 +121,101 @@ void SistemaGerenciador::gerarArquivoIndiceSecundario()
     long offset = 0;
     std::vector<IndiceSecundario> indiceSecundario;
     Aluno aluno;
-    std::vector<Aluno> alunos; // Vai pegar a Matricula
+    std::vector<Auxiliar> aux; // Vai pegar a Matricula
 
-    QuickSort<IndiceSecundario> organizarIn;
-    QuickSort<Aluno> organizaAluno; 
-
-    //Leitura e Geração dos Índices
+    // Leitura e Geração dos Índices
     while (lerRegistro(arquivoBin, aluno, offset))
     {
-        IndiceSecundario indice;
+        Auxiliar temp;
 
-        strcpy(indice.curso, aluno.curso); 
-        indice.rrn_lista_invertida = offset; 
+        strcpy(temp.curso, aluno.curso);
+        temp.matricula = aluno.matricula;
+        temp.byte_offset = offset;
 
-        indiceSecundario.push_back(indice);
-        
-        alunos.push_back(aluno);
+        aux.push_back(temp);
+
         offset += sizeof(Aluno);
     }
-    int tam = indiceSecundario.size();
+    IndiceSecundario in;
 
-    //Ordena por curso
-    organizarIn.organizaIndices(indiceSecundario, tam);
-    organizaAluno.organizaIndices(alunos, alunos.size()); 
+    // Ordena por curso
+    in.organizaIndices(aux, aux.size());
 
-    // Geração da Lista Invertida 
+    // Geração da Lista Invertida
 
-    long inicio = 0; // Offset no arquivo ListaInvertida
-    char curso_temp[30] = ""; 
-    
-    // Vetor de agrupamento guarda Matrícula + RRN
-    std::vector<ItemListaInvertida> itensLista; 
+    char curso_temp[30] = ""; // Guarda o curso atual
+    int rrnAtual = 0;         // Guarda o offset da no atual da lista invertida
+    int rrnAnterior = -1;     // Guarda o offset da no atual da lista invertida
 
-    // Inicializa curso_temp
-    strcpy(curso_temp, indiceSecundario[0].curso);
-    
+    arquivoBin.close();
+
     // Itera sobre o vetor ordenado
-    for (size_t i = 0; i < indiceSecundario.size(); ++i)
+    for (size_t i = 0; i < aux.size(); ++i)
     {
-        // Se o curso mudar 
-        if (strcmp(curso_temp, indiceSecundario[i].curso) != 0)
+        // Se o curso mudar
+        if (strcmp(curso_temp, aux[i].curso) != 0)
         {
-            // Escreve o grupo anterior pares de Matrícula/RRN
-            for (const auto& item : itensLista)
+            // Verificação para atualizar o último nó da lista invertida. Em vez dele apontar para o offset
+            // de um outro curso ele aponta para -1.
+            if (rrnAnterior != 0)
             {
-                // Escreve o par Matrícula e RRN separados por espaço.
-                listaInvertida << item.matricula << ":" << item.rrn << " "; 
+                // Encontra o rrn que deve ser alterado
+                long posParaCorrigir = (rrnAnterior * sizeof(NoListaInvertida)) + sizeof(int);
+
+                long corrigir = -1;
+
+                // Atualiza o curso
+                listaInvertida.seekp(posParaCorrigir);
+
+                // Encontra -1
+                listaInvertida.write((char *)&corrigir, sizeof(long));
+
+                // Atualizar o cursor para o final do arquivo
+                listaInvertida.seekp(0, std::ios::end);
             }
-            listaInvertida << "\n";
 
-            //Captura o novo offset e escreve o índice do grupo anterior
-            long novaPosi = listaInvertida.tellp(); 
-            // Salva o índice secundário: Curso | Offset_Lista_Invertida
-            fileIndice << curso_temp << " | " << inicio << "\n";
+            // Muda o curso_temp para armazenar um novo curso
+            strcpy(curso_temp, aux[i].curso);
 
-            //Prepara para o próximo curso
-            itensLista.clear();
-            strcpy(curso_temp, indiceSecundario[i].curso);
-            inicio = novaPosi;
+            // Preenche um índice secundário
+            IndiceSecundario novoIndice;
+            strcpy(novoIndice.curso, curso_temp);
+            novoIndice.rrn_lista_invertida = rrnAtual;
+
+            // Grava no arquivo
+            escreverRegistro(fileIndice, novoIndice);
         }
+        // Cria e preenche um novo nó
+        NoListaInvertida no;
+        no.matricula_aluno = aux[i].matricula;
+        no.proximo_rrn = rrnAtual + 1;
 
-        //Adiciona o par Matrícula + RRN ao vetor de agrupamento
-        ItemListaInvertida novoItem;
-        
-        // Pega o RRN já salvo na estrutura de índice
-        novoItem.rrn = indiceSecundario[i].rrn_lista_invertida; 
-        
-        //  Pega a Matrícula do vetor alunos, que está na mesma posição 'i'
-        novoItem.matricula = alunos[i].matricula; 
-        
-        itensLista.push_back(novoItem);
+        // Escreve o nó no arquivo ListaInvertida
+        escreverRegistro(listaInvertida, no);
+
+        // Atualiza as variáveis auxiliares
+        rrnAnterior = rrnAtual;
+        rrnAtual++;
     }
-    
-    // Tratamento do ultimo curso
-    
-    if (!itensLista.empty()) {
-        for (const auto& item : itensLista)
-        {
-            listaInvertida << item.matricula << ":" << item.rrn << " ";
-        }
-        listaInvertida << "\n";
+    if (rrnAnterior != -1)
+    {
+        // Encontra o rrn que deve ser alterado
+        long posParaCorrigir = (rrnAnterior * sizeof(NoListaInvertida)) + sizeof(int);
 
-        fileIndice << curso_temp << " | " << inicio << "\n";
+        long corrigir = -1;
+
+        // Atualiza o curso
+        listaInvertida.seekp(posParaCorrigir);
+
+        // Encontra -1
+        listaInvertida.write((char *)&corrigir, sizeof(long));
+
+        // Atualizar o cursor para o final do arquivo
+        listaInvertida.seekp(0, std::ios::end);
     }
 
     fileIndice.close();
-    arquivoBin.close();
     listaInvertida.close();
-}
-void SistemaGerenciador::escreverRegistro(std::ofstream &out, const Aluno &aluno)
-{
-    out.write(reinterpret_cast<const char *>(&aluno), sizeof(Aluno));
 }
 
 // Essa função vai servir para os indices
@@ -289,5 +293,3 @@ void SistemaGerenciador::buscarAlunoPorMatricula(int matricula, std::ifstream &i
 // Criar os índices secundarios
 // Alterar o menu
 // Implementar a politica de remoção usando lista de disponíveis.
-
-
