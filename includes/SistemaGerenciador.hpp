@@ -47,7 +47,6 @@ public:
 private:
     long buscarIndicePrimario(int matricula);
     long buscarIndiceSecundario(const std::string &curso);
-    bool lerRegistro(std::ifstream &in, Aluno &aluno, long offset);
     long obterEspaçoDisponivel();
     void adicionarEspaçoDisponivel(long offset);
 };

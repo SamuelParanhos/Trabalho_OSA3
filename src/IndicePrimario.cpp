@@ -39,6 +39,24 @@ void IndicePrimario::desce(std::vector<IndicePrimario> &indices, int tamanho, in
     }
 }
 
+void IndicePrimario::sobe(std::vector<IndicePrimario> &indices, int no)
+{
+    // A raiz está no índice 0, então para se o nó for a raiz
+    if (no == 0)
+    {
+         return;
+    }
+    // Calcula o índice do nó pai
+    int pai = (no - 1) / 2;
+
+    // Se o elemento no nó atual filho for maior que o pai
+    if (indices[no].matricula > indices[pai].matricula)
+    {
+        troca(indices, no, pai); // Troca o filho com o pai
+        sobe(indices, pai);      // Chama recursivamente para continuar subindo
+    }
+}
+
 // troca dois elementos de posição
 void IndicePrimario::troca(std::vector<IndicePrimario> &indices, int i, int j)
 {

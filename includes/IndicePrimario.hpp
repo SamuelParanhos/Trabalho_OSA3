@@ -14,6 +14,8 @@ public:
 
 private:
     void desce(std::vector<IndicePrimario> &indices, int tamanho, int no);
+    void sobe (std::vector<IndicePrimario> &indices, int no);
     void troca(std::vector<IndicePrimario> &indices, int i, int j);
+    
 };
 #endif
