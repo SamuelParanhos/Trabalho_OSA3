@@ -17,7 +17,7 @@ private:
     std::string arquivoIndicePrimario;
     std::string arquivoIndiceCurso;
     std::string arquivoListainvertidaCurso;
-    std::string arquivioDisponiveis;
+    std::string arquivoDisponiveis;
     std::string arquivoIndiceSecundario;
     std::string ListaInvertida;
     std::vector<IndicePrimario> indices;
@@ -42,7 +42,7 @@ public:
     void buscarAlunoPorMatricula(int matricula, std::ifstream &in);
     void bucarAlunosPorCurso(std::string nomdeDoCurso);
     bool removerAlunoPorMatricula();
-    std::vector<std::string> encontraCursos(std::vector<IndiceSecundario> indices);
+    void inicilizaVetores();
 
 private:
     long buscarIndicePrimario(int matricula);
@@ -58,4 +58,24 @@ template <typename T>
 void escreverRegistro(std::ofstream &out, const T &objeto)
 {
     out.write(reinterpret_cast<const char *>(&objeto), sizeof(T));
+}
+
+template <typename T>
+
+bool lerRegistro(std::ifstream &in, T &t, long offset)
+{
+    // Posiciona o curso de leitura no inicio de cada registro de aluno
+    in.seekg(offset);
+
+    // Verifica se o curso do arquivo acessa uma zona válida
+    if (!in)
+        return false;
+
+    // Tenta ler o tamanho do próximo registro. Se não conseguir retorna false.
+    if (!in.read(reinterpret_cast<char *>(&t), sizeof(T)))
+    {
+        return false;
+    }
+
+    return true;
 }
