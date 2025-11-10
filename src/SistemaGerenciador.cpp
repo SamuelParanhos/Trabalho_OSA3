@@ -288,7 +288,15 @@ void SistemaGerenciador::buscarAlunoPorMatricula(int matricula, std::ifstream &i
 
     std::cout << "Matricula não encontrada!!!" << std::endl;
 }
+bool SistemaGerenciador::removerAlunoPorMatricula()
+{
+    int matricula;
 
+    std::cout << "Digite a matricula a ser removida" << std::endl;
+    std::cin >> matricula;
+
+    // int indice = buscaIndicePrimario(matricula, );
+}
 // Modificar o heap, para inserção e remoção
 // Criar os índices secundarios
 // Alterar o menu

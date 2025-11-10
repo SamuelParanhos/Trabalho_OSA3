@@ -9,7 +9,6 @@
 #include "IndiceSecundario.hpp"
 #include "NoListaInvertida.hpp"
 #include "Auxiliar.hpp"
-
 class SistemaGerenciador
 {
 private:
@@ -21,6 +20,8 @@ private:
     std::string arquivioDisponiveis;
     std::string arquivoIndiceSecundario;
     std::string ListaInvertida;
+    std::vector<IndicePrimario> indices;
+    std::vector<IndiceSecundario> indicesSecundarios;
 
 public:
     SistemaGerenciador(const std::string &csv, const std::string &dados, const std::string &indicePrimario,
