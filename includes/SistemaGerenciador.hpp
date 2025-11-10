@@ -39,13 +39,13 @@ public:
     void gerarArquivoIndicePrimario();
     void gerarArquivoIndiceSecundario();
     void inserirAluno();
-    void buscarAlunoPorMatricula(int matricula, std::ifstream &in, std::vector<IndicePrimario> &indices);
+    void buscarAlunoPorMatricula(int matricula, std::ifstream &in);
     void bucarAlunosPorCurso(std::string nomdeDoCurso);
     bool removerAlunoPorMatricula();
     std::vector<std::string> encontraCursos(std::vector<IndiceSecundario> indices);
 
 private:
-    long buscarIndicePrimario(int matricula, const std::vector<IndicePrimario> &indices);
+    long buscarIndicePrimario(int matricula);
     long buscarIndiceSecundario(const std::string &curso);
     bool lerRegistro(std::ifstream &in, Aluno &aluno, long offset);
     long obterEspaçoDisponivel();

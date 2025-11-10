@@ -157,7 +157,7 @@ void SistemaGerenciador::gerarArquivoIndiceSecundario()
         {
             // Verificação para atualizar o último nó da lista invertida. Em vez dele apontar para o offset
             // de um outro curso ele aponta para -1.
-            if (rrnAnterior != 0)
+            if (rrnAnterior != -1)
             {
                 // Encontra o rrn que deve ser alterado
                 long posParaCorrigir = (rrnAnterior * sizeof(NoListaInvertida)) + sizeof(int);
@@ -237,7 +237,7 @@ bool SistemaGerenciador::lerRegistro(std::ifstream &in, Aluno &aluno, long offse
     return true;
 }
 
-long SistemaGerenciador::buscarIndicePrimario(int matricula, const std::vector<IndicePrimario> &indices)
+long SistemaGerenciador::buscarIndicePrimario(int matricula)
 {
 
     // Declara as variáveis auxiliares
@@ -287,13 +287,13 @@ long SistemaGerenciador::buscarIndiceSecundario(const std::string &curso)
     return -1;
 }
 
-void SistemaGerenciador::buscarAlunoPorMatricula(int matricula, std::ifstream &in, std::vector<IndicePrimario> &indices)
+void SistemaGerenciador::buscarAlunoPorMatricula(int matricula, std::ifstream &in)
 {
     Aluno aluno;
     // Busca o indice Primario
-    long offset = buscarIndicePrimario(matricula, indices);
+    long offset = buscarIndicePrimario(matricula);
 
-    if (offset != 1)
+    if (offset != -1)
     {
         // Lê o registro no arquivo de dados
         if (lerRegistro(in, aluno, offset))
@@ -308,31 +308,32 @@ void SistemaGerenciador::buscarAlunoPorMatricula(int matricula, std::ifstream &i
 
 void SistemaGerenciador::bucarAlunosPorCurso(std::string nomdeDoCurso)
 {
+    std::ifstream fileIndice(arquivoDados, std::ios::binary);
     long rrn = buscarIndiceSecundario(nomdeDoCurso);
 
     if (rrn == -1)
     {
-        std::cout <<"Curso não encontrado";
+        std::cout << "Curso não encontrado";
         return;
     }
 
     std::ifstream listaInvertida(arquivoListainvertidaCurso, std::ios::binary);
 
-    //Pecorre a Lista
-    while(rrn != -1){
-        //calcula o offset
+    // Pecorre a Lista
+    while (rrn != -1)
+    {
+        // calcula o offset
         long offsetNoLista = rrn * sizeof(NoListaInvertida);
         listaInvertida.seekg(offsetNoLista);
         NoListaInvertida no;
-        listaInvertida.read(reinterpret_cast<char*>(&no), sizeof(NoListaInvertida));
+        listaInvertida.read(reinterpret_cast<char *>(&no), sizeof(NoListaInvertida));
 
-        //tem que pensar em alguma forma de usar essa informação
-
+        buscarAlunoPorMatricula(no.matricula_aluno, fileIndice);
         rrn = no.proximo_rrn;
     }
 
     listaInvertida.close();
-
+    fileIndice.close();
 }
 
 bool SistemaGerenciador::removerAlunoPorMatricula()
