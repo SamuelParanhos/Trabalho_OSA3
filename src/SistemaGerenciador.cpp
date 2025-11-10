@@ -270,6 +270,23 @@ long SistemaGerenciador::buscarIndicePrimario(int matricula, const std::vector<I
     return -1;
 }
 
+long SistemaGerenciador::buscarIndiceSecundario(const std::string &curso)
+{
+    std::ifstream fileIndice(arquivoIndiceSecundario, std::ios::binary);
+    IndiceSecundario novoIndice;
+
+    // fileIndice.read() tenta ler sizeof(IndiceSecundario) bytes para o novoIndice, se der certo retorna true
+    while (fileIndice.read(reinterpret_cast<char *>(&novoIndice), sizeof(IndiceSecundario)))
+    {
+        if (strcmp(novoIndice.curso, curso.c_str()) == 0)
+        {
+            return novoIndice.rrn_lista_invertida;
+        }
+    }
+    fileIndice.close();
+    return -1;
+}
+
 void SistemaGerenciador::buscarAlunoPorMatricula(int matricula, std::ifstream &in, std::vector<IndicePrimario> &indices)
 {
     Aluno aluno;
@@ -288,6 +305,36 @@ void SistemaGerenciador::buscarAlunoPorMatricula(int matricula, std::ifstream &i
 
     std::cout << "Matricula não encontrada!!!" << std::endl;
 }
+
+void SistemaGerenciador::bucarAlunosPorCurso(std::string nomdeDoCurso)
+{
+    long rrn = buscarIndiceSecundario(nomdeDoCurso);
+
+    if (rrn == -1)
+    {
+        std::cout <<"Curso não encontrado";
+        return;
+    }
+
+    std::ifstream listaInvertida(arquivoListainvertidaCurso, std::ios::binary);
+
+    //Pecorre a Lista
+    while(rrn != -1){
+        //calcula o offset
+        long offsetNoLista = rrn * sizeof(NoListaInvertida);
+        listaInvertida.seekg(offsetNoLista);
+        NoListaInvertida no;
+        listaInvertida.read(reinterpret_cast<char*>(&no), sizeof(NoListaInvertida));
+
+        //tem que pensar em alguma forma de usar essa informação
+
+        rrn = no.proximo_rrn;
+    }
+
+    listaInvertida.close();
+
+}
+
 bool SistemaGerenciador::removerAlunoPorMatricula()
 {
     int matricula;

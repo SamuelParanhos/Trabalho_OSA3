@@ -40,7 +40,7 @@ public:
     void gerarArquivoIndiceSecundario();
     void inserirAluno();
     void buscarAlunoPorMatricula(int matricula, std::ifstream &in, std::vector<IndicePrimario> &indices);
-    void bucarAlunosPorCurso();
+    void bucarAlunosPorCurso(std::string nomdeDoCurso);
     bool removerAlunoPorMatricula();
     std::vector<std::string> encontraCursos(std::vector<IndiceSecundario> indices);
 
