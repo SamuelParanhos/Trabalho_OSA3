@@ -7,11 +7,9 @@
 
 void SistemaGerenciador::iniciar()
 {
-    gerarArquivos();
-    gerarArquivoIndicePrimario();
-    gerarArquivoIndiceSecundario();
+
     inicilizaVetores();
-    IndicePrimario in;
+
 
     // menu de teste
     int opcao;
@@ -19,10 +17,14 @@ void SistemaGerenciador::iniciar()
     {
         std::cout << "Sistema Gerenciador de Alunos" << std::endl;
         std::cout << "-------------------------------" << std::endl;
-        std::cout << "1 - Inserir Aluno" << std::endl;
-        std::cout << "2 - Remover Aluno por matrícula" << std::endl;
-        std::cout << "3 - Buscar Aluno por matrícula" << std::endl;
-        std::cout << "4 - Buscar Aluno por curso" << std::endl;
+        std::cout << "1 - Gerar Arquivo de Dados" << std::endl;
+        std::cout << "2 - Gerar Arquivo de Indices Primários" << std::endl;
+        std::cout << "3 - Gerar Arquivo de Indices Secundários" << std::endl;
+        std::cout << "4 - Gerar Arquivo de Disponíveis" << std::endl;
+        std::cout << "5 - Inserir Aluno" << std::endl;
+        std::cout << "6 - Remover Aluno por matrícula" << std::endl;
+        std::cout << "7 - Buscar Aluno por matrícula" << std::endl;
+        std::cout << "8 - Buscar Aluno por curso" << std::endl;
         std::cout << "0 - Sair" << std::endl;
         std::cout << "Escolha uma opcao: ";
         std::cin >> opcao;
@@ -30,25 +32,44 @@ void SistemaGerenciador::iniciar()
         switch (opcao)
         {
         case 1:
+            gerarArquivos();
+            break;
+        
+        case 2:
+            gerarArquivoIndicePrimario();
+            break;
+            
+        case 3:
+            gerarArquivoIndiceSecundario();
+            break;
+
+        case 4:
+            gerarAquivoDisponiveis();
+            break;
+
+        case 5:
+        {
             int continuar;
+            IndicePrimario in;
             do
             {
                 void inserirAluno();
                 std::cout << "Deseja insereir mais um aluno? " << "\n"
-                          << "1 - Sim" << "\n"
-                          << "2 - Não";
+                << "1 - Sim" << "\n"
+                << "2 - Não";
                 std::cin >> continuar;
             } while (continuar != 2);
             in.organizar(indices);
             int tam = sizeof(indicesSecundarios);
             organizaIndices(indicesSecundarios, tam);
             break;
-
-        case 2:
+            
+        }
+        case 6:
             removerAlunoPorMatricula();
             break;
 
-        case 3:
+        case 7:
         {
             int matricula;
             std::cout << "Digite a matrícula desejada" << std::endl;
@@ -58,7 +79,7 @@ void SistemaGerenciador::iniciar()
             fileBin.close();
             break;
         }
-        case 4:
+        case 8:
             char curso[30];
             std::cout << "Digite o curso desejada" << std::endl;
             std::cin >> curso;
@@ -186,7 +207,6 @@ void SistemaGerenciador::gerarArquivoIndiceSecundario()
 
         offset += sizeof(Aluno);
     }
-    IndiceSecundario in;
 
     // Ordena por curso
     organizaIndices(aux, aux.size());
@@ -308,9 +328,8 @@ long SistemaGerenciador::buscarIndicePrimario(int matricula, int retorno)
 
 long SistemaGerenciador::buscarIndiceSecundario(const std::string &curso)
 {
-    IndiceSecundario novoIndice;
 
-    for (int i = 0; i < indicesSecundarios.size(); i++)
+    for (size_t i = 0; i < indicesSecundarios.size(); i++)
     {
         if (strcmp(curso.c_str(), indicesSecundarios[i].curso) == 0)
         {
@@ -322,9 +341,6 @@ long SistemaGerenciador::buscarIndiceSecundario(const std::string &curso)
 
 void SistemaGerenciador::buscarAlunoPorMatricula(int matricula, std::ifstream &in)
 {
-    int matricula;
-    std::cout << "Digite a matricula desejada" << std::endl;
-    std::cin >> matricula;
     Aluno aluno;
     // Busca o indice Primario
     long offset = buscarIndicePrimario(matricula, 1);
@@ -443,6 +459,7 @@ void SistemaGerenciador::inserirAluno()
     char curso[30];
     int matricula;
     long offset;
+    long matriculaExiste;
 
     std::cout << "Digite o nome do aluno: ";
     std::cin >> nome;
@@ -452,15 +469,14 @@ void SistemaGerenciador::inserirAluno()
     std::cin >> matricula;
 
     // Verifica se a Matricula Existe
-    long matriculaExiste;
-    buscarIndicePrimario(matriculaExiste, 1);
-    if (matricula != -1)
+    matriculaExiste = buscarIndicePrimario(matricula, 1);
+    if (matriculaExiste != -1)
     {
         std::cout << "Matricula ja Existe";
         return;
     }
 
-    long offset = obterEspaçoDisponivel();
+    offset = obterEspaçoDisponivel();
     fileBin.seekp(offset);
 
     Aluno aluno(nome, curso, matricula);
@@ -512,7 +528,7 @@ void SistemaGerenciador::insereIndiceSecundario(const Aluno &aluno)
 
 long SistemaGerenciador::obterEspaçoDisponivel()
 {
-    for (int i = 0; i < disponiveis.size(); i++)
+    for (size_t i = 0; i < disponiveis.size(); i++)
     {
         if (disponiveis[i].valido)
         {
@@ -530,4 +546,7 @@ void SistemaGerenciador::adicionarEspaçoDisponivel(long offset)
     disponivel.valido = true;
     disponiveis.push_back(disponivel);
     escreverRegistro(fileDisponiveis, disponivel);
+}
+void gerarAquivoDisponiveis(){
+    std::ofstream arquivoDisponiveis()
 }

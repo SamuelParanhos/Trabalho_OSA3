@@ -1,6 +1,7 @@
 #ifndef ALUNO_HPP
 #define ALUNO_HPP
-
+#include <cstring>
+#include <string>
 class Aluno
 {
 public:

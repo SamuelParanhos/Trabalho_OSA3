@@ -47,7 +47,7 @@ int main()
     
     SistemaGerenciador sistema("data/alunos_mil.csv", "data/alunos.dat", "data/indices.dat",
                                "data/indicesSecundarios.dat", "data/ListaInvertida.dat", 
-                               "data/disponiveis.dat");
+                               fileDisponivel);
     
    sistema.iniciar();
    return 0;

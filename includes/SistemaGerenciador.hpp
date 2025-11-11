@@ -28,14 +28,14 @@ private:
 public:
     SistemaGerenciador(const std::string &csv, const std::string &dados, const std::string &indicePrimario,
                        const std::string &indiceSecundario, const std::string &listaInvertida,
-                       const std::string &Disponiveis)
+                       const std::string &disponiveis)
     {
         arquivoCSV = csv;
         arquivoDados = dados;
         arquivoIndicePrimario = indicePrimario;
         arquivoIndiceCurso = indiceSecundario;
         arquivoListainvertidaCurso = listaInvertida;
-        arquivoDados = Disponiveis;
+        arquivoDisponiveis = disponiveis;
     };
     SistemaGerenciador() = default;
     void iniciar();
@@ -47,7 +47,7 @@ public:
     void bucarAlunosPorCurso(std::string nomdeDoCurso);
     bool removerAlunoPorMatricula();
     void inicilizaVetores();
-
+    void gerarAquivoDisponiveis();
 private:
     long buscarIndicePrimario(int matricula, int retorno);
     long buscarIndiceSecundario(const std::string &curso);
@@ -55,7 +55,7 @@ private:
     void adicionarEspaçoDisponivel(long offset);
     void insereIndiceSecundario(const Aluno &aluno);
 };
-#endif
+
 
 template <typename T>
 
@@ -83,3 +83,5 @@ bool lerRegistro(std::ifstream &in, T &t, long offset)
 
     return true;
 }
+
+#endif

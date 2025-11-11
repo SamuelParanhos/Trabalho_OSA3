@@ -22,7 +22,7 @@ DEBUG := -g
 MATH := -lm
 
 # Compilador
-CC := g++
+CC := g++  # <-- LINHA CORRIGIDA: Removido o espaço em branco antes de CC
 
 # Ajuste para SO
 ifeq ($(OS), Windows_NT)
@@ -75,7 +75,7 @@ $(SRC)/SistemaGerenciador.o: $(SRC)/SistemaGerenciador.cpp \
                             $(INCLUDES)/IndiceSecundario.hpp \
                             $(INCLUDES)/NoListaInvertida.hpp \
                             $(INCLUDES)/Auxiliar.hpp \
-                            $(INCLUDES)/Disponiveis.hpp \
+                            $(INCLUDES)/Disponiveis.hpp
 	$(CC) $(FLAGS) -c $(SRC)/SistemaGerenciador.cpp -o $(SRC)/SistemaGerenciador.o
 
 # --- Alvos de Ação ---

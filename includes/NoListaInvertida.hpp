@@ -11,7 +11,6 @@ public:
     long proximo_rrn;
 
 public:
-    void insereMatricula(std::ofstream &listaInvertida, Aluno &aluno);
 };
 
 #endif
