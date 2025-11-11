@@ -8,8 +8,6 @@ SRC := src
 OBJECTS := $(MAIN).o \
            $(SRC)/Aluno.o \
            $(SRC)/IndicePrimario.o \
-           $(SRC)/IndiceSecundario.o \
-           $(SRC)/NoListaInvertida.o \
            $(SRC)/SistemaGerenciador.o
 
 # Flags do compilador
@@ -58,14 +56,6 @@ $(SRC)/Aluno.o: $(SRC)/Aluno.cpp $(INCLUDES)/Aluno.hpp
 # IndicePrimario.o
 $(SRC)/IndicePrimario.o: $(SRC)/IndicePrimario.cpp $(INCLUDES)/IndicePrimario.hpp
 	$(CC) $(FLAGS) -c $(SRC)/IndicePrimario.cpp -o $(SRC)/IndicePrimario.o
-
-# IndiceSecundario.o
-$(SRC)/IndiceSecundario.o: $(SRC)/IndiceSecundario.cpp $(INCLUDES)/IndiceSecundario.hpp
-	$(CC) $(FLAGS) -c $(SRC)/IndiceSecundario.cpp -o $(SRC)/IndiceSecundario.o
-
-# NoListaInvertida.o
-$(SRC)/NoListaInvertida.o: $(SRC)/NoListaInvertida.cpp $(INCLUDES)/NoListaInvertida.hpp
-	$(CC) $(FLAGS) -c $(SRC)/NoListaInvertida.cpp -o $(SRC)/NoListaInvertida.o
 
 # SistemaGerenciador.o
 $(SRC)/SistemaGerenciador.o: $(SRC)/SistemaGerenciador.cpp \

@@ -7,26 +7,22 @@
 
 void SistemaGerenciador::iniciar()
 {
-    std::cout<<"teste"<<std::endl;
     inicilizaVetores();
-     std::cout<<"teste2"<<std::endl;
     // menu de teste
     int opcao;
     do
     {
         std::cout << "Sistema Gerenciador de Alunos" << std::endl;
         std::cout << "-------------------------------" << std::endl;
-        std::cout << "1 - Gerar Arquivo de Dados" << std::endl;
-        std::cout << "2 - Gerar Arquivo de Indices Primários" << std::endl;
-        std::cout << "3 - Gerar Arquivo de Indices Secundários" << std::endl;
-        std::cout << "4 - Gerar Arquivo de Disponíveis" << std::endl;
-        std::cout << "5 - Inserir Aluno" << std::endl;
-        std::cout << "6 - Remover Aluno por matrícula" << std::endl;
-        std::cout << "7 - Buscar Aluno por matrícula" << std::endl;
-        std::cout << "8 - Buscar Aluno por curso" << std::endl;
+        std::cout << "1 - Gerar arquivos" << std::endl;
+        std::cout << "2 - Inserir Aluno" << std::endl;
+        std::cout << "3 - Remover Aluno por matrícula" << std::endl;
+        std::cout << "4 - Buscar Aluno por matrícula" << std::endl;
+        std::cout << "5 - Buscar Aluno por curso" << std::endl;
         std::cout << "0 - Sair" << std::endl;
         std::cout << "Escolha uma opcao: ";
-        if (!(std::cin >> opcao)) {
+        if (!(std::cin >> opcao))
+        {
             std::cin.clear();
             opcao = -1; // Para evitar loop infinito em caso de input inválido
             std::cout << "Opção inválida, tente novamente." << std::endl;
@@ -36,22 +32,14 @@ void SistemaGerenciador::iniciar()
         switch (opcao)
         {
         case 1:
+            // Gera os arquivos necessários para o programa rodar
             gerarArquivos();
-            break;
-
-        case 2:
             gerarArquivoIndicePrimario();
-            break;
-
-        case 3:
             gerarArquivoIndiceSecundario();
-            break;
-
-        case 4:
             gerarAquivoDisponiveis();
             break;
 
-        case 5:
+        case 2:
         {
             int continuar;
             IndicePrimario in;
@@ -62,17 +50,17 @@ void SistemaGerenciador::iniciar()
                           << "1 - Sim" << "\n"
                           << "2 - Não" << "\n";
                 std::cin >> continuar;
+                in.organizar(indices);
             } while (continuar != 2);
-            in.organizar(indices);
             int tam = indicesSecundarios.size();
             organizaIndices(indicesSecundarios, tam);
             break;
         }
-        case 6:
+        case 3:
             removerAlunoPorMatricula();
             break;
 
-        case 7:
+        case 4:
         {
             int matricula;
             std::cout << "Digite a matrícula desejada" << std::endl;
@@ -82,7 +70,7 @@ void SistemaGerenciador::iniciar()
             fileBin.close();
             break;
         }
-        case 8:
+        case 5:
             char curso[30];
             std::cout << "Digite o curso desejada" << std::endl;
             std::cin >> curso;
@@ -91,48 +79,57 @@ void SistemaGerenciador::iniciar()
         }
 
     } while (opcao != 0);
+    atualizar();
 }
 void SistemaGerenciador::inicilizaVetores()
 {
+    // Limpa os vetores
     disponiveis.clear();
     indices.clear();
     indicesSecundarios.clear();
-   std::cout<<"Apos limpeza"<<std::endl;
+
+    // Variável usada para percorrer os arquivos
     long offset = 0;
-    std::ifstream fileDisponiveis(arquivoDisponiveis);
-    std::ifstream fileIndicePrimario(arquivoIndicePrimario);
-    std::ifstream fileIndiceSecundario(arquivoIndiceSecundario);
+
+    // Abertura dos arquivos
+    std::ifstream fileDisponiveis(arquivoDisponiveis, std::ios::binary);
+    std::ifstream fileIndicePrimario(arquivoIndicePrimario, std::ios::binary);
+    std::ifstream fileIndiceSecundario(arquivoIndiceSecundario, std::ios::binary);
 
     Disponiveis disponivel;
 
+    // Populando o vetor de disponíveis
     while (lerRegistro(fileDisponiveis, disponivel, offset))
     {
         disponiveis.push_back(disponivel);
+        offset += sizeof(Disponiveis);
     }
-    std::cout<<"Apos leitura de Disponiveis"<<std::endl;
 
     offset = 0;
     IndicePrimario indice_primario;
 
+    // Populando o vetor de indices primário
     while (lerRegistro(fileIndicePrimario, indice_primario, offset))
     {
         indices.push_back(indice_primario);
+        offset += sizeof(IndicePrimario);
     }
-    std::cout<<"Apos leitura de IndicesPri"<<std::endl;
 
     offset = 0;
     IndiceSecundario indice_secundario;
 
+    // Populando o vetor de indices secundários
     while (lerRegistro(fileIndiceSecundario, indice_secundario, offset))
     {
         indicesSecundarios.push_back(indice_secundario);
+        offset += sizeof(IndiceSecundario);
     }
-    std::cout<<"Apos leitura de IndiceSec"<<std::endl;
+    std::cout << "Apos leitura de IndiceSec" << std::endl;
 
+    // Fechamento dos arquivos
     fileDisponiveis.close();
     fileIndicePrimario.close();
     fileIndiceSecundario.close();
-    std::cout<<"Fim da funçaõ"<<std::endl;
 }
 void SistemaGerenciador::gerarArquivos()
 {
@@ -204,23 +201,17 @@ void SistemaGerenciador::gerarArquivoIndicePrimario()
     fileBin.close();
 }
 
-// Definição da estrutura que será salva na Lista Invertida
-/*struct ItemListaInvertida
-{
-????????
-    std::string matricula;
-    long rrn;
-};*/
-
 void SistemaGerenciador::gerarArquivoIndiceSecundario()
 {
+    // Limpa o vetor de indíces secundarios
     indicesSecundarios.clear();
-    std::cout<<"Apos Limpeza"<<std::endl;
 
+    // Abertura do arquivo
     std::ofstream fileIndice(arquivoIndiceSecundario, std::ios::binary);
     std::ifstream arquivoBin(arquivoDados, std::ios::binary);
     std::ofstream listaInvertida(arquivoListainvertidaCurso, std::ios::binary);
 
+    // Verificando se os arquivos foram abertos
     if (!arquivoBin.is_open())
     {
         std::cout << "Erro ao abrir o arquivo de dados para geração do índice secundário." << std::endl;
@@ -254,14 +245,12 @@ void SistemaGerenciador::gerarArquivoIndiceSecundario()
 
         offset += sizeof(Aluno);
     }
-    std::cout<<"Apos Geração"<<std::endl;
 
     // Ordena por curso
     organizaIndices(aux, aux.size());
-    std::cout<<"Apos Organizar"<<std::endl;
+    std::cout << "Apos Organizar" << std::endl;
 
     // Geração da Lista Invertida
-
 
     char curso_temp[30] = ""; // Guarda o curso atual
     int rrnAtual = 0;         // Guarda o offset da no atual da lista invertida
@@ -334,13 +323,41 @@ void SistemaGerenciador::gerarArquivoIndiceSecundario()
         // Atualizar o cursor para o final do arquivo
         listaInvertida.seekp(0, std::ios::end);
     }
-    std::cout<<"Apos Lista"<<std::endl;
+    std::cout << "Apos Lista" << std::endl;
     fileIndice.close();
     listaInvertida.close();
 }
 
-// Essa função vai servir para os indices
+void SistemaGerenciador::atualizar()
+{
+    //Atualiza o arquivo de indice primario
+    std::ofstream fileIndice(arquivoIndicePrimario, std::ios::binary);
+    fileIndice.clear();
+    for (size_t i = 0; i < indices.size(); i++)
+    {
+        escreverRegistro(fileIndice, indices[i]);
+    }
 
+    //Atualiza o arquivo de indice secundario
+    std::ofstream fileIndiceSec(arquivoIndiceSecundario, std::ios::binary);
+    fileIndiceSec.clear();
+
+    for (size_t i = 0; i < indicesSecundarios.size(); i++)
+    {
+        escreverRegistro(fileIndiceSec, indicesSecundarios[i]);
+    }
+
+    //Atualizar o arquivo de Disponiveis
+    std::ofstream fileDisponiveis(arquivoDisponiveis, std::ios::binary);
+    fileDisponiveis.clear();
+    
+    for(size_t i = 0; i < disponiveis.size(); i++)
+    {
+        escreverRegistro(fileDisponiveis, disponiveis[i]);
+    }
+}
+
+// Essa função vai servir para os indices
 long SistemaGerenciador::buscarIndicePrimario(int matricula, int retorno)
 {
 
@@ -379,18 +396,39 @@ long SistemaGerenciador::buscarIndicePrimario(int matricula, int retorno)
 
 long SistemaGerenciador::buscarIndiceSecundario(const std::string &curso, int opcao)
 {
+    // Declara as variáveis auxiliares
+    int ini = 0;
+    int fim = indicesSecundarios.size() - 1;
+    int meio;
 
-    for (size_t i = 0; i < indicesSecundarios.size(); i++)
+    // Faz a busca binária enquanto a posição for válida
+    while (ini <= fim)
     {
-        if (strcmp(curso.c_str(), indicesSecundarios[i].curso) == 0)
+        meio = (ini + fim) / 2;
+        
+        int comparacao = strcmp(curso.c_str(), indicesSecundarios[meio].curso);
+        
+        // Se encontra o curso (comparacao == 0)
+        if (comparacao == 0)
         {
             if (opcao == 1)
-                return indicesSecundarios[i].rrn_lista_invertida;
+                return indicesSecundarios[meio].rrn_lista_invertida; // Retorna o RRN
             else
-                return i;
+                return meio; // Retorna o índice do vetor
+        }
+        // Se o curso buscado é "maior" (vem depois do 'meio')
+        else if (comparacao > 0)
+        {
+            ini = meio + 1;
+        }
+        // Se o curso buscado é "menor" (vem antes do 'meio')
+        else
+        {
+            fim = meio - 1;
         }
     }
-    return -1;
+
+    return -1; // Curso não encontrado
 }
 
 void SistemaGerenciador::buscarAlunoPorMatricula(int matricula, std::ifstream &in)
@@ -415,25 +453,30 @@ void SistemaGerenciador::buscarAlunoPorMatricula(int matricula, std::ifstream &i
 
 void SistemaGerenciador::bucarAlunosPorCurso(std::string nomdeDoCurso)
 {
+    // Abre o arquivo
     std::ifstream fileDados(arquivoDados, std::ios::binary);
 
+    // Verifica a abertura do arquivo
     if (!fileDados.is_open())
     {
         std::cout << "Erro: Arquivo de dados não encontrado/aberto para busca por curso." << std::endl;
         return;
     }
 
+    // busca a cabeça da lista do curso buscado
     long rrn = buscarIndiceSecundario(nomdeDoCurso, 1);
 
+    // Verifica se o curso existe
     if (rrn == -1)
     {
         std::cout << "Curso não encontrado";
         return;
     }
 
-    std::cout << "Alunos encontrados no curso '" << nomdeDoCurso << "':" << std::endl;
+    // Abertura do arquivo
     std::ifstream listaInvertida(arquivoListainvertidaCurso, std::ios::binary);
 
+    // Verifica abertura do arquivo
     if (!listaInvertida.is_open())
     {
         std::cout << "Erro: Arquivo de lista invertida não encontrado/aberto." << std::endl;
@@ -446,6 +489,8 @@ void SistemaGerenciador::bucarAlunosPorCurso(std::string nomdeDoCurso)
     {
         // calcula o offset
         long offsetNoLista = rrn * sizeof(NoListaInvertida);
+
+        // Passa pelo nó de cada lista e le o nó
         listaInvertida.seekg(offsetNoLista);
         NoListaInvertida no;
         listaInvertida.read(reinterpret_cast<char *>(&no), sizeof(NoListaInvertida));
@@ -453,7 +498,11 @@ void SistemaGerenciador::bucarAlunosPorCurso(std::string nomdeDoCurso)
         fileDados.clear();
         // volta para o inicio
         fileDados.seekg(0, std::ios::beg);
+
+        // Chama a função de busca para encontrar o aluno e imprimir ele na tela
         buscarAlunoPorMatricula(no.matricula_aluno, fileDados);
+
+        // Atualiza o rrn
         rrn = no.proximo_rrn;
     }
 
@@ -463,6 +512,7 @@ void SistemaGerenciador::bucarAlunosPorCurso(std::string nomdeDoCurso)
 
 bool SistemaGerenciador::removerAlunoPorMatricula()
 {
+    // Abertura do arquivo
     std::fstream fileBin(arquivoDados, std::ios::binary | std::ios::in | std::ios::out);
     std::fstream listaInvertida(arquivoListainvertidaCurso, std::ios::binary | std::ios::in | std::ios::out);
     int matricula;
@@ -470,25 +520,39 @@ bool SistemaGerenciador::removerAlunoPorMatricula()
     std::cout << "Digite a matricula a ser removida" << std::endl;
     std::cin >> matricula;
 
+    // Busca o offset da matricula a ser removida
     int offset = buscarIndicePrimario(matricula, 1);
+
+    // Busca o índice da matricula a ser removida
     int indicePrimarioVector = buscarIndicePrimario(matricula, 2);
 
+    // Verifica se a matrícula existe
     if (offset == -1)
     {
         std::cout << "O aluno buscado não existe!" << std::endl;
         return false;
     }
 
+    // Adiciona um espaço disponível no vetor de espaço
     adicionarEspaçoDisponivel(offset);
+
+    // Apaga o índice que contém a matricula, do vetor de índices
 
     indices.erase(indices.begin() + indicePrimarioVector);
 
+    // Limpa e fecha o arquivo de dados
     Aluno aluno;
     fileBin.clear();
+    //Usa o aluno para encontra o índice no vetor de indices secundários
     lerRegistro(fileBin, aluno, offset);
     fileBin.close();
 
+    //Busca o elemento do vetor de indices secundarios correspondente ao curso do 
+    //aluno a ser removido
+    
     int indiceSec = buscarIndiceSecundario(aluno.curso, 2);
+    
+    //Verifica se o curso existe
     if (indiceSec == -1)
     {
         // Isso não deveria acontecer se o aluno existia.
@@ -496,7 +560,8 @@ bool SistemaGerenciador::removerAlunoPorMatricula()
         listaInvertida.close();
         return false;
     }
-
+    
+    //Recebe a cabeça da lista invertida
     long rrnCabecaLista = indicesSecundarios[indiceSec].rrn_lista_invertida;
 
     // Caso 1: O nó a ser removido é a cabeça da lista
@@ -584,12 +649,15 @@ void SistemaGerenciador::inserirAluno()
 
     // Verifica se a Matricula Existe
     matriculaExiste = buscarIndicePrimario(matricula, 1);
+
     if (matriculaExiste != -1)
     {
         std::cout << "Matricula ja Existe";
         return;
     }
 
+    //Recebe o offset do espaço disponivel no vetor de dados,
+    //caso ele exista, se não existir insere no final do arquivo
     offset = obterEspaçoDisponivel();
 
     if (offset == -1)
@@ -597,8 +665,8 @@ void SistemaGerenciador::inserirAluno()
         fileBin.seekp(0, std::ios::end);
         offset = fileBin.tellp();
     }
-    else
-    {
+    else{
+
         fileBin.seekp(offset);
     }
 
@@ -609,11 +677,14 @@ void SistemaGerenciador::inserirAluno()
     {
         fileBin.seekp(std::ios::end);
     }
+
+    //Cria um novo indice primario e insere no vetor
     IndicePrimario indicePrimario;
     indicePrimario.matricula = aluno.matricula;
     indicePrimario.byte_offset = offset;
     indices.push_back(indicePrimario);
 
+    //Escreve o aluno no arquivo de dados
     escreverRegistro(fileBin, aluno);
     fileBin.close();
 
@@ -623,6 +694,7 @@ void SistemaGerenciador::inserirAluno()
 
 void SistemaGerenciador::insereIndiceSecundario(const Aluno &aluno)
 {
+    //Abertura do arquivo
     std::fstream fileListaInvertida(arquivoListainvertidaCurso, std::ios::binary | std::ios::in | std::ios::out | std::ios::ate);
 
     if (!fileListaInvertida.is_open())
@@ -643,6 +715,7 @@ void SistemaGerenciador::insereIndiceSecundario(const Aluno &aluno)
 
     long rrn_cabeca_anterior;
 
+    //Se não houver curso, cria um posição no vetor de indices secundario e aponta para o final da lista
     if (indice == -1)
     {
         rrn_cabeca_anterior = -1;
@@ -652,11 +725,13 @@ void SistemaGerenciador::insereIndiceSecundario(const Aluno &aluno)
         indice = indicesSecundarios.size() - 1;
     }
     else
-    {
+    {   
+        //Se houver, atualiza a cabeça da lista
         rrn_cabeca_anterior = indicesSecundarios[indice].rrn_lista_invertida;
         indicesSecundarios[indice].rrn_lista_invertida = novo_rrn_lista_invertida;
     }
 
+    //Cria um novo nó da lista
     NoListaInvertida novoNo;
     novoNo.matricula_aluno = aluno.matricula;
     novoNo.proximo_rrn = rrn_cabeca_anterior;
@@ -667,6 +742,7 @@ void SistemaGerenciador::insereIndiceSecundario(const Aluno &aluno)
 
 long SistemaGerenciador::obterEspaçoDisponivel()
 {
+    //Encontra a primeira posição da lista de disponíveis
     for (size_t i = 0; i < disponiveis.size(); i++)
     {
         if (disponiveis[i].valido)
@@ -679,12 +755,11 @@ long SistemaGerenciador::obterEspaçoDisponivel()
 }
 void SistemaGerenciador::adicionarEspaçoDisponivel(long offset)
 {
-    std::fstream fileDisponiveis(arquivoDisponiveis, std::ios::binary | std::ios::in | std::ios::out | std::ios::ate);
+    //Adiciona um novo espaço(posição) a lista de disponíveis
     Disponiveis disponivel;
     disponivel.offset = offset;
     disponivel.valido = true;
     disponiveis.push_back(disponivel);
-    escreverRegistro(fileDisponiveis, disponivel);
 }
 void SistemaGerenciador::gerarAquivoDisponiveis()
 {

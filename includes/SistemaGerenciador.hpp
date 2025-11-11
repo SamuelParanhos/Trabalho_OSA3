@@ -53,6 +53,7 @@ private:
     long obterEspaçoDisponivel();
     void adicionarEspaçoDisponivel(long offset);
     void insereIndiceSecundario(const Aluno &aluno);
+    void atualizar();
 };
 
 template <typename T>
