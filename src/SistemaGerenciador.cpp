@@ -50,14 +50,14 @@ void SistemaGerenciador::iniciar()
             IndicePrimario in;
             do
             {
-                void inserirAluno();
+                inserirAluno();
                 std::cout << "Deseja insereir mais um aluno? " << "\n"
                           << "1 - Sim" << "\n"
                           << "2 - Não";
                 std::cin >> continuar;
             } while (continuar != 2);
             in.organizar(indices);
-            int tam = sizeof(indicesSecundarios);
+            int tam = indicesSecundarios.size();
             organizaIndices(indicesSecundarios, tam);
             break;
         }
@@ -492,7 +492,16 @@ void SistemaGerenciador::inserirAluno()
     }
 
     offset = obterEspaçoDisponivel();
-    fileBin.seekp(offset);
+
+    if (offset == -1)
+    {
+        fileBin.seekp(0, std::ios::end);
+        offset = fileBin.tellp();
+    }
+    else
+    {
+        fileBin.seekp(offset);
+    }
 
     Aluno aluno(nome, curso, matricula);
     // Indice Primario
@@ -514,32 +523,50 @@ void SistemaGerenciador::inserirAluno()
 
 void SistemaGerenciador::insereIndiceSecundario(const Aluno &aluno)
 {
-    std::fstream fileIndiceSecundario(arquivoIndiceSecundario, std::ios::binary | std::ios::in | std::ios::out | std::ios::ate);
+
     std::fstream fileListaInvertida(arquivoListainvertidaCurso, std::ios::binary | std::ios::in | std::ios::out | std::ios::ate);
 
-    long cursoExistente;
+   // long cursoExistente;
     int indice;
     IndiceSecundario indiceSecundario;
 
-    cursoExistente = buscarIndiceSecundario(aluno.curso, 1);
+    // O RRN onde o NOVO nó da lista invertida será escrito
+    long novo_rrn_lista_invertida = fileListaInvertida.tellp();
+
+    //cursoExistente = buscarIndiceSecundario(aluno.curso, 1);
     indice = buscarIndiceSecundario(aluno.curso, 2);
 
-    if (cursoExistente == -1)
+    long rrn_cabeca_anterior;
+
+    if (indice == -1)
     {
+
+        rrn_cabeca_anterior = -1;
+
         strcpy(indiceSecundario.curso, aluno.curso);
-        indiceSecundario.rrn_lista_invertida = fileListaInvertida.tellp();
+
+        indiceSecundario.rrn_lista_invertida = novo_rrn_lista_invertida;
 
         indicesSecundarios.push_back(indiceSecundario);
+
+        indice = indicesSecundarios.size() - 1;
     }
     else
     {
-        indicesSecundarios[indice].rrn_lista_invertida = fileListaInvertida.tellp();
+
+        rrn_cabeca_anterior = indicesSecundarios[indice].rrn_lista_invertida;
+
+        indicesSecundarios[indice].rrn_lista_invertida = novo_rrn_lista_invertida;
     }
 
     NoListaInvertida novoNo;
     novoNo.matricula_aluno = aluno.matricula;
-    novoNo.proximo_rrn = indicesSecundarios[indice].rrn_lista_invertida;
+
+    novoNo.proximo_rrn = rrn_cabeca_anterior;
+
     escreverRegistro(fileListaInvertida, novoNo);
+
+    fileListaInvertida.close();
 }
 
 long SistemaGerenciador::obterEspaçoDisponivel()
