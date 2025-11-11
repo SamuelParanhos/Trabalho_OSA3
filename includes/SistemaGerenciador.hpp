@@ -47,7 +47,7 @@ public:
     void inicilizaVetores();
 
 private:
-    long buscarIndicePrimario(int matricula);
+    long buscarIndicePrimario(int matricula, int retorno);
     long buscarIndiceSecundario(const std::string &curso);
     long obterEspaçoDisponivel();
     void adicionarEspaçoDisponivel(long offset);

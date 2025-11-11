@@ -74,7 +74,8 @@ $(SRC)/SistemaGerenciador.o: $(SRC)/SistemaGerenciador.cpp \
                             $(INCLUDES)/IndicePrimario.hpp \
                             $(INCLUDES)/IndiceSecundario.hpp \
                             $(INCLUDES)/NoListaInvertida.hpp \
-                            $(INCLUDES)/Auxiliar.hpp
+                            $(INCLUDES)/Auxiliar.hpp \
+                            $(INCLUDES)/Disponiveis.hpp \
 	$(CC) $(FLAGS) -c $(SRC)/SistemaGerenciador.cpp -o $(SRC)/SistemaGerenciador.o
 
 # --- Alvos de Ação ---
