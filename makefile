@@ -47,7 +47,8 @@ $(MAIN).o: $(MAIN).cpp \
            $(INCLUDES)/IndicePrimario.hpp \
            $(INCLUDES)/IndiceSecundario.hpp \
            $(INCLUDES)/NoListaInvertida.hpp \
-           $(INCLUDES)/SistemaGerenciador.hpp
+           $(INCLUDES)/SistemaGerenciador.hpp \
+           $(INCLUDES)/Auxiliar.hpp
 	$(CC) $(FLAGS) -c $(MAIN).cpp -o $(MAIN).o
 
 # Aluno.o
@@ -72,7 +73,8 @@ $(SRC)/SistemaGerenciador.o: $(SRC)/SistemaGerenciador.cpp \
                             $(INCLUDES)/Aluno.hpp \
                             $(INCLUDES)/IndicePrimario.hpp \
                             $(INCLUDES)/IndiceSecundario.hpp \
-                            $(INCLUDES)/NoListaInvertida.hpp
+                            $(INCLUDES)/NoListaInvertida.hpp \
+                            $(INCLUDES)/Auxiliar.hpp
 	$(CC) $(FLAGS) -c $(SRC)/SistemaGerenciador.cpp -o $(SRC)/SistemaGerenciador.o
 
 # --- Alvos de Ação ---

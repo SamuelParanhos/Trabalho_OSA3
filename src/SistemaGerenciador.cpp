@@ -68,11 +68,9 @@ void SistemaGerenciador::iniciar()
 }
 void SistemaGerenciador::inicilizaVetores()
 {
-    // std::ifstream indicePrimario(arquivoIndicePrimario, std::ios::binary);
     std::ifstream indiceSecundario(arquivoIndiceSecundario, std::ios::binary);
     std::ifstream disponiveis(arquivoDisponiveis);
 
-    // std::vector<IndicePrimario> indicesPrimarios;
     std::vector<IndiceSecundario> indicesSecundarios;
     // Criar parte de disponíveis
 
@@ -81,16 +79,7 @@ void SistemaGerenciador::inicilizaVetores()
     // Criar a parte de disponiveis
 
     long offset = 0;
-    /*
-        while (lerRegistro(indicePrimario, primario, offset))
-        {
-            IndicePrimario indice;
-            indice.matricula = primario.matricula;
-            indice.byte_offset = offset;
-            offset += sizeof(IndicePrimario);
-            indicesPrimarios.push_back(indice);
-        }
-    */
+   
     while (lerRegistro(indiceSecundario, secundario, offset))
     {
         IndiceSecundario indice;
@@ -99,16 +88,6 @@ void SistemaGerenciador::inicilizaVetores()
         offset += sizeof(IndiceSecundario);
         indicesSecundarios.push_back(indice);
     }
-    /*
-    while (lerRegistro(indicePrimario, primario, offset))
-    {
-        IndicePrimario indice;
-        indice.matricula = primario.matricula;
-        indice.byte_offset = offset;
-        offset += sizeof(IndicePrimario);
-        indicesPrimarios.push_back(indice);
-    }
-    */
 }
 void SistemaGerenciador::gerarArquivos()
 {
@@ -403,9 +382,13 @@ bool SistemaGerenciador::removerAlunoPorMatricula()
     std::cin >> matricula;
 
     // int indice = buscaIndicePrimario(matricula, );
+
+    //adicionarEspaçoDisponivel(offset);
 }
 void SistemaGerenciador::inserirAluno()
 {
+    std::ofstream fileBin(arquivoDados, std::ios::binary);
+
     // Dados do Aluno
     char nome[50];
     char curso[50];
@@ -419,50 +402,80 @@ void SistemaGerenciador::inserirAluno()
     std::cout << "Digite a matricula do aluno: ";
     std::cin >> matricula;
 
+    //Verifica se a Matricula Existe
+    long matriculaExiste;
+    buscarIndicePrimario(matriculaExiste);
+    if(matricula != -1){
+        std::cout << "Matricula ja Existe";
+        return;
+    }
+
+    long offset = obterEspaçoDisponivel();
+    fileBin.seekp(offset);
+    
     Aluno aluno(nome, curso, matricula);
     // Indice Primario
-    std::ofstream fileIndice(arquivoIndicePrimario, std::ios::binary);
-    offset = fileIndice.tellp();
+
+    if(offset == -1)
+    {
+       fileBin.seekp(std::ios::end);
+    }
     IndicePrimario indicePrimario;
     indicePrimario.matricula = aluno.matricula;
     indicePrimario.byte_offset = offset;
     indices.push_back(indicePrimario);
 
-    escreverRegistro(fileIndice, aluno);
-    fileIndice.close();
+    escreverRegistro(fileBin, aluno);
+    fileBin.close();
 
-    // indice Secundario
-    long Novorrrn;
-    long rrn;
-    long rrnIndiceSecundario;
+    insereIndiceSecundario(aluno);
 
+   
+}
+
+void SistemaGerenciador::insereIndiceSecundario(const Aluno &aluno)
+{
+   
     std::ofstream fileIndiceSecundario(arquivoIndiceSecundario, std::ios::binary);
     std::ofstream fileListaInvertida(arquivoListainvertidaCurso, std::ios::binary);
 
-    long Novorrrn;
+    long Novorrn;
     long rrnCabeça;
     long cursoExistente;
     IndiceSecundario IndiceSecundario;
 
     // Vai para o final
-    fileListaInvertida.seekp(0, std::ios::end);
+    fileListaInvertida.seekp(std::ios::end);
     // rrn do nó que era o primeiro
     rrnCabeça = -1;
 
     // Verifica se o curso existe
     cursoExistente = buscarIndiceSecundario(aluno.curso);
-
+    //Samuel->Robert->Tadeu
+    //
+    //Lucio->Robert->Tadeu->Samuel
     NoListaInvertida novoNo;
     novoNo.matricula_aluno = aluno.matricula;
     novoNo.proximo_rrn = rrnCabeça;
     escreverRegistro(fileListaInvertida, novoNo);
 
-    if (cursoExistente == -1) //Não existe
+}
+
+long SistemaGerenciador::obterEspaçoDisponivel()
+{
+    long temp;
+    for(int i = 0; i < disponiveis.size(); i++)
     {
-        
-        IndiceSecundario.rrn_lista_invertida = Novorrrn;
-        escreverRegistro(fileIndiceSecundario, IndiceSecundario);
+        if(disponiveis[i].valido){
+            disponiveis[i].valido = false;
+            return disponiveis[i].offset;
+        }
     }
+    return -1;   
+}
+void adicionarEspaçoDisponivel(long offset)
+{
+
 }
 // Modificar o heap, para inserção e remoção
 // Criar os índices secundarios

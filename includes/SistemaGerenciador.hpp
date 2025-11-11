@@ -8,6 +8,7 @@
 #include "IndicePrimario.hpp"
 #include "IndiceSecundario.hpp"
 #include "NoListaInvertida.hpp"
+#include "Disponiveis.hpp"
 #include "Auxiliar.hpp"
 class SistemaGerenciador
 {
@@ -22,6 +23,7 @@ private:
     std::string ListaInvertida;
     std::vector<IndicePrimario> indices;
     std::vector<IndiceSecundario> indicesSecundarios;
+    std::vector<Disponiveis> disponiveis;
 
 public:
     SistemaGerenciador(const std::string &csv, const std::string &dados, const std::string &indicePrimario,
@@ -49,6 +51,7 @@ private:
     long buscarIndiceSecundario(const std::string &curso);
     long obterEspaçoDisponivel();
     void adicionarEspaçoDisponivel(long offset);
+    void insereIndiceSecundario(const Aluno &aluno);
 };
 #endif
 
