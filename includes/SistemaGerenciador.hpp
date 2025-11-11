@@ -48,25 +48,25 @@ public:
     bool removerAlunoPorMatricula();
     void inicilizaVetores();
     void gerarAquivoDisponiveis();
+
 private:
     long buscarIndicePrimario(int matricula, int retorno);
-    long buscarIndiceSecundario(const std::string &curso);
+    long buscarIndiceSecundario(const std::string &curso, int opcao);
     long obterEspaçoDisponivel();
     void adicionarEspaçoDisponivel(long offset);
     void insereIndiceSecundario(const Aluno &aluno);
 };
 
-
 template <typename T>
 
-void escreverRegistro(std::ofstream &out, const T &objeto)
+void escreverRegistro(std::ostream &out, const T &objeto)
 {
     out.write(reinterpret_cast<const char *>(&objeto), sizeof(T));
 }
 
 template <typename T>
 
-bool lerRegistro(std::ifstream &in, T &t, long offset)
+bool lerRegistro(std::istream &in, T &t, long offset)
 {
     // Posiciona o curso de leitura no inicio de cada registro de aluno
     in.seekg(offset);
