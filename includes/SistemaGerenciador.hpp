@@ -27,13 +27,15 @@ private:
 
 public:
     SistemaGerenciador(const std::string &csv, const std::string &dados, const std::string &indicePrimario,
-                       const std::string &indiceSecundario, const std::string &listaInvertida)
+                       const std::string &indiceSecundario, const std::string &listaInvertida,
+                       const std::string &Disponiveis)
     {
         arquivoCSV = csv;
         arquivoDados = dados;
         arquivoIndicePrimario = indicePrimario;
         arquivoIndiceCurso = indiceSecundario;
         arquivoListainvertidaCurso = listaInvertida;
+        arquivoDados = Disponiveis;
     };
     SistemaGerenciador() = default;
     void iniciar();

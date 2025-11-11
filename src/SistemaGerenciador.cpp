@@ -40,6 +40,8 @@ void SistemaGerenciador::iniciar()
                 std::cin >> continuar;
             } while (continuar != 2);
             in.organizar(indices);
+            int tam = sizeof(indicesSecundarios);
+            organizaIndices(indicesSecundarios, tam);
             break;
 
         case 2:
@@ -68,19 +70,10 @@ void SistemaGerenciador::iniciar()
 }
 void SistemaGerenciador::inicilizaVetores()
 {
-    std::ifstream fileIndiceSecundario(arquivoIndiceSecundario, std::ios::binary);
+    long offset = 0;
+    
     std::ifstream fileDisponiveis(arquivoDisponiveis);
 
-    long offset = 0;
-
-    IndiceSecundario secundario;
-
-    while (lerRegistro(fileIndiceSecundario, secundario, offset))
-    {
-        indicesSecundarios.push_back(secundario);
-    }
-
-    offset = 0;
     Disponiveis disponivel;
 
     while (lerRegistro(fileDisponiveis, disponivel, offset))
@@ -88,7 +81,7 @@ void SistemaGerenciador::inicilizaVetores()
         disponiveis.push_back(disponivel);
         
     }
-    fileIndiceSecundario.close();
+
     fileDisponiveis.close();
 }
 void SistemaGerenciador::gerarArquivos()
@@ -196,7 +189,7 @@ void SistemaGerenciador::gerarArquivoIndiceSecundario()
     IndiceSecundario in;
 
     // Ordena por curso
-    in.organizaIndices(aux, aux.size());
+    organizaIndices(aux, aux.size());
 
     // Geração da Lista Invertida
 
@@ -382,6 +375,7 @@ void SistemaGerenciador::bucarAlunosPorCurso(std::string nomdeDoCurso)
 bool SistemaGerenciador::removerAlunoPorMatricula()
 {
     std::ifstream fileBin(arquivoDados);
+    std::ifstream listaInvertida(arquivoListainvertidaCurso);
     int matricula;
 
     std::cout << "Digite a matricula a ser removida" << std::endl;
@@ -404,17 +398,40 @@ bool SistemaGerenciador::removerAlunoPorMatricula()
     Aluno aluno;
     lerRegistro(fileBin, aluno, offset);
 
-    int count;
+    int indiceSec = buscarIndiceSecundario(aluno.curso);
+    IndiceSecundario indiceSecundario = indicesSecundarios[indiceSec];
+    NoListaInvertida no;
 
+    if(!lerRegistro(listaInvertida, no, indiceSecundario.rrn_lista_invertida))
+    return false;
 
+    if(no.proximo_rrn == -1 && no.matricula_aluno == matricula)
+    {
+        indicesSecundarios[indice].rrn_lista_invertida = -1;
+        return true;
+    }
+    
+    if(no.proximo_rrn != -1 && no.matricula_aluno == matricula)
+    {
+        indicesSecundarios[indice].rrn_lista_invertida = no.proximo_rrn;
+        return true;
+    }
 
+    NoListaInvertida noProximo;
 
-    //Se tiver apenas um nó, o indice secundario aponta para -1.
-    //Se for no ínicio, o indice secundario precisa ser altera e a lista também
-    //Se for no final ou no meio, apenas a lista precisa ser alterada.
+    if(!lerRegistro(listaInvertida, noProximo, no.proximo_rrn))
+    return false;
+    
+    while(noProximo.proximo_rrn != -1 && noProximo.matricula_aluno != matricula)
+    {
+        no = noProximo;
+        
+        if(!lerRegistro(listaInvertida, noProximo, noProximo.proximo_rrn))
+        return false;
+    }
 
-
-
+    no.proximo_rrn = noProximo.proximo_rrn;
+    return true;
 }
 
 void SistemaGerenciador::inserirAluno()
