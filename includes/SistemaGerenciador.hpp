@@ -16,11 +16,9 @@ private:
     std::string arquivoCSV;
     std::string arquivoDados;
     std::string arquivoIndicePrimario;
-    std::string arquivoIndiceCurso;
+    std::string arquivoIndiceSecundario;
     std::string arquivoListainvertidaCurso;
     std::string arquivoDisponiveis;
-    std::string arquivoIndiceSecundario;
-    std::string ListaInvertida;
     std::vector<IndicePrimario> indices;
     std::vector<IndiceSecundario> indicesSecundarios;
     std::vector<Disponiveis> disponiveis;
@@ -33,7 +31,7 @@ public:
         arquivoCSV = csv;
         arquivoDados = dados;
         arquivoIndicePrimario = indicePrimario;
-        arquivoIndiceCurso = indiceSecundario;
+        arquivoIndiceSecundario = indiceSecundario;
         arquivoListainvertidaCurso = listaInvertida;
         arquivoDisponiveis = disponiveis;
     };
